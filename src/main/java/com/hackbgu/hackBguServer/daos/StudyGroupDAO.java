@@ -6,5 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface StudyGroupDAO extends CrudRepository<StudyGroup,Integer> {
-    List<StudyGroup> findByCourseName(String courseName);
+    //StudyGroup findByGroupName(String groupName);
+    List<StudyGroup> findByGroupName(String courseName);
 }

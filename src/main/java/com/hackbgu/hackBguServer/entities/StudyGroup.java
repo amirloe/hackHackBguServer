@@ -1,13 +1,7 @@
 package com.hackbgu.hackBguServer.entities;
 
-import org.hibernate.annotations.Type;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
+import java.util.*;
 
 
 @Entity
@@ -25,26 +19,46 @@ public class StudyGroup {
     private int groupSize;
 
     @Column(unique=true)
+    private String groupName;
+
+    @Column(unique=true)
     private String courseName;
+
+    @Column(unique=true)
+    private String groupCreator;
 
     private String description; //"assiggnment 3" or "study for test" for example
 
     private Date startTime;
 
-    @OneToMany
-    @Type(type = "com.hackbgu.hackBguServer.entities.Student")
-    private List<Student> students;
+    private String zoomUrl;
 
-    public void setStudents(List<Student> students) {
-        this.students = students;
+    private String students = "";
+
+    public String getGroupName() {
+        return groupName;
     }
 
-    public StudyGroup(String groupName, Date startTime, Integer groupSize, List<Student> students, String description, String zoomUrl){
-        this.courseName = groupName;
-        this.startTime = startTime;
-        this.groupSize = groupSize;
-        this.students = students;
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public String getGroupCreator() {
+        return groupCreator;
+    }
+
+    public void setGroupCreator(String groupOwener) {
+        this.groupCreator = groupOwener;
+    }
+
+    public StudyGroup(String groupCreator, String groupName, String courseName, Integer maxNumberOfStudents, String description, String zoomUrl){
+        this.groupCreator = groupCreator;
+        this.groupName = groupName;
+        this.courseName = courseName;
+        this.startTime = new Date();
+        this.groupSize = 0;
         this.description = description;
+        this.maxNumberOfStudents = maxNumberOfStudents;
         this.zoomUrl = zoomUrl;
     }
 
@@ -56,14 +70,18 @@ public class StudyGroup {
         this.description = description;
     }
 
-    public void addStudent(Student student){
-        if (groupSize < maxNumberOfStudents){
-            students.add(student);
-            groupSize++;
-        }
-        else{
-            System.out.println("max number of students in this group is " + groupSize);
-        }
+    public void addStudent(String student){
+        students = students + ", " + student;
+        //students.add(student);
+        groupSize++;
+
+    }
+
+    public void removeStudent(String student){
+        List<String> studs = new LinkedList<String>(Arrays.asList(students.split(", ")));//Arrays.asList(students.split(", "));
+        studs.removeIf(s -> s.equals(student));
+        groupSize--;
+        this.students = String.join(", ", studs);
     }
 
     public int getMaxNumberOfStudents() {
@@ -74,17 +92,30 @@ public class StudyGroup {
         return groupSize;
     }
 
-    public List<Student> getStudents() {
+    //@OneToMany//(targetEntity=Student.class, mappedBy="name", fetch=FetchType.EAGER)
+    //@Transient
+    public String getStudents() {
         return students;
     }
 
-    private String zoomUrl;
+    public void setGroupSize(int groupSize) {
+        this.groupSize = groupSize;
+    }
+
+    //@Transient
+    public void setStudents(String students) {
+        this.students = students;
+    }
+
+    public void setMaxNumberOfStudents(int maxNumberOfStudents) {
+        this.maxNumberOfStudents = maxNumberOfStudents;
+    }
+
 
     public void setId(int id) {
         this.id = id;
     }
 
-    @Id
     public int getId() {
         return id;
     }
