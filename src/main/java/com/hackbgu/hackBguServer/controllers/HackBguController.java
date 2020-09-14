@@ -4,6 +4,7 @@ import com.hackbgu.hackBguServer.daos.CourseDAO;
 import com.hackbgu.hackBguServer.daos.StudyGroupDAO;
 import com.hackbgu.hackBguServer.entities.StudyGroup;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,19 +41,38 @@ public class HackBguController {
         return studyGroupDAO.findByGroupName(groupName);
     }
 
+    @GetMapping("/groups_by_courseName")
+    @ResponseBody
+    public List<StudyGroup> getGroupsByCourseName(@RequestParam(value = "courseName")String courseName){
+        return studyGroupDAO.findByCourseName(courseName);
+
+    }
+
+    @GetMapping("/groups_by_date")
+    @ResponseBody
+    public List<StudyGroup> getGroupsByStartTime(@RequestParam(value = "startTime")Date startTime){
+        return studyGroupDAO.findByStartTime(startTime);
+
+    }
+
     @GetMapping("/create_group")
     @ResponseBody
-    public StudyGroup CreateGroup(@RequestParam(value = "groupCreator")String groupCreator,
+    public String CreateGroup(@RequestParam(value = "groupCreator")String groupCreator,
                                   @RequestParam(value = "groupName")String groupName,
                                   @RequestParam(value = "courseName")String courseName,
                                   @RequestParam(value = "maxNumberOfStudents")Integer maxNumberOfStudents,
                                   @RequestParam(value = "description")Optional<String> description,
                                   @RequestParam(value = "zoomUrl")Optional<String> zoomUrl){
 
-        StudyGroup studyGroup = new StudyGroup(groupCreator,groupName,courseName,maxNumberOfStudents,description.orElse(""),zoomUrl.orElse(""));
+        List<StudyGroup> studyGroupList =  studyGroupDAO.findByGroupName(groupName);
+        if (studyGroupList.size() > 0)
+            return "failed to create group: group already exist";
+
+
+        StudyGroup studyGroup = new StudyGroup(groupName,groupCreator,courseName,maxNumberOfStudents,description.orElse(""),zoomUrl.orElse(""));
 
         studyGroupDAO.save(studyGroup);
-        return studyGroup;
+        return "success to create group";
     }
 
     @GetMapping("/add_student")

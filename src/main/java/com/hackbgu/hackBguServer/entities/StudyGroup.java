@@ -21,10 +21,8 @@ public class StudyGroup {
     @Column(unique=true)
     private String groupName;
 
-    @Column(unique=true)
     private String courseName;
 
-    @Column(unique=true)
     private String groupCreator;
 
     private String description; //"assiggnment 3" or "study for test" for example
@@ -51,7 +49,7 @@ public class StudyGroup {
         this.groupCreator = groupOwener;
     }
 
-    public StudyGroup(String groupCreator, String groupName, String courseName, Integer maxNumberOfStudents, String description, String zoomUrl){
+    public StudyGroup(String groupName,String groupCreator,String courseName, Integer maxNumberOfStudents, String description, String zoomUrl){
         this.groupCreator = groupCreator;
         this.groupName = groupName;
         this.courseName = courseName;
